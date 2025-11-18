@@ -2,7 +2,6 @@ export interface Student {
   id: string;
   name: string;
   email: string;
-  password: string;
   classId: string;
   parentIds: string[];
 }
@@ -11,7 +10,6 @@ export interface Teacher {
   id: string;
   name: string;
   email: string;
-  password: string;
   subject: string;
 }
 
@@ -19,17 +17,7 @@ export interface Parent {
   id: string;
   name: string;
   email: string;
-  password: string;
   studentIds: string[];
-}
-
-export type UserRole = 'teacher' | 'student' | 'parent';
-
-export interface AuthUser {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRole;
 }
 
 export interface Class {
@@ -78,7 +66,6 @@ const STORAGE_KEYS = {
   SCHEDULES: 'cyber_school_schedules',
   ASSIGNMENTS: 'cyber_school_assignments',
   GRADES: 'cyber_school_grades',
-  AUTH_USER: 'cyber_school_auth_user',
 };
 
 function getFromStorage<T>(key: string): T[] {
@@ -236,47 +223,3 @@ export const storage = {
 export function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
-
-export const auth = {
-  login: (email: string, password: string): AuthUser | null => {
-    const teachers = storage.teachers.getAll();
-    const students = storage.students.getAll();
-    const parents = storage.parents.getAll();
-
-    const teacher = teachers.find(t => t.email === email && t.password === password);
-    if (teacher) {
-      const authUser: AuthUser = { id: teacher.id, name: teacher.name, email: teacher.email, role: 'teacher' };
-      localStorage.setItem(STORAGE_KEYS.AUTH_USER, JSON.stringify(authUser));
-      return authUser;
-    }
-
-    const student = students.find(s => s.email === email && s.password === password);
-    if (student) {
-      const authUser: AuthUser = { id: student.id, name: student.name, email: student.email, role: 'student' };
-      localStorage.setItem(STORAGE_KEYS.AUTH_USER, JSON.stringify(authUser));
-      return authUser;
-    }
-
-    const parent = parents.find(p => p.email === email && p.password === password);
-    if (parent) {
-      const authUser: AuthUser = { id: parent.id, name: parent.name, email: parent.email, role: 'parent' };
-      localStorage.setItem(STORAGE_KEYS.AUTH_USER, JSON.stringify(authUser));
-      return authUser;
-    }
-
-    return null;
-  },
-
-  logout: () => {
-    localStorage.removeItem(STORAGE_KEYS.AUTH_USER);
-  },
-
-  getCurrentUser: (): AuthUser | null => {
-    const data = localStorage.getItem(STORAGE_KEYS.AUTH_USER);
-    return data ? JSON.parse(data) : null;
-  },
-
-  isAuthenticated: (): boolean => {
-    return auth.getCurrentUser() !== null;
-  },
-};
