@@ -18,8 +18,8 @@ export default function ClassesTab() {
   const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
   
   const [newClass, setNewClass] = useState({ name: '', teacherId: '' });
-  const [newTeacher, setNewTeacher] = useState({ name: '', email: '', subject: '' });
-  const [newStudent, setNewStudent] = useState({ name: '', email: '', classId: '' });
+  const [newTeacher, setNewTeacher] = useState({ name: '', email: '', password: '', subject: '' });
+  const [newStudent, setNewStudent] = useState({ name: '', email: '', password: '', classId: '' });
 
   useEffect(() => {
     loadData();
@@ -52,7 +52,7 @@ export default function ClassesTab() {
   };
 
   const handleAddTeacher = () => {
-    if (!newTeacher.name || !newTeacher.email || !newTeacher.subject) {
+    if (!newTeacher.name || !newTeacher.email || !newTeacher.password || !newTeacher.subject) {
       toast.error('Заполните все поля');
       return;
     }
@@ -61,18 +61,19 @@ export default function ClassesTab() {
       id: generateId(),
       name: newTeacher.name,
       email: newTeacher.email,
+      password: newTeacher.password,
       subject: newTeacher.subject,
     };
 
     storage.teachers.add(teacher);
-    setNewTeacher({ name: '', email: '', subject: '' });
+    setNewTeacher({ name: '', email: '', password: '', subject: '' });
     setIsAddTeacherOpen(false);
     loadData();
     toast.success('Преподаватель добавлен');
   };
 
   const handleAddStudent = () => {
-    if (!newStudent.name || !newStudent.email || !newStudent.classId) {
+    if (!newStudent.name || !newStudent.email || !newStudent.password || !newStudent.classId) {
       toast.error('Заполните все поля');
       return;
     }
@@ -81,6 +82,7 @@ export default function ClassesTab() {
       id: generateId(),
       name: newStudent.name,
       email: newStudent.email,
+      password: newStudent.password,
       classId: newStudent.classId,
       parentIds: [],
     };
@@ -94,7 +96,7 @@ export default function ClassesTab() {
       });
     }
 
-    setNewStudent({ name: '', email: '', classId: '' });
+    setNewStudent({ name: '', email: '', password: '', classId: '' });
     setIsAddStudentOpen(false);
     loadData();
     toast.success('Ученик добавлен');
@@ -147,6 +149,16 @@ export default function ClassesTab() {
                     value={newTeacher.email}
                     onChange={(e) => setNewTeacher({ ...newTeacher, email: e.target.value })}
                     placeholder="teacher@cyberschool.ru"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="teacher-password">Пароль</Label>
+                  <Input
+                    id="teacher-password"
+                    type="password"
+                    value={newTeacher.password}
+                    onChange={(e) => setNewTeacher({ ...newTeacher, password: e.target.value })}
+                    placeholder="••••••••"
                   />
                 </div>
                 <div>
@@ -259,6 +271,16 @@ export default function ClassesTab() {
                             value={newStudent.email}
                             onChange={(e) => setNewStudent({ ...newStudent, email: e.target.value })}
                             placeholder="student@cyberschool.ru"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="student-password">Пароль</Label>
+                          <Input
+                            id="student-password"
+                            type="password"
+                            value={newStudent.password}
+                            onChange={(e) => setNewStudent({ ...newStudent, password: e.target.value })}
+                            placeholder="••••••••"
                           />
                         </div>
                         <Button onClick={handleAddStudent} className="w-full">Добавить</Button>
